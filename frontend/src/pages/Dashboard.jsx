@@ -3,7 +3,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import Menu from '../components/common/Menu';
 import {  getDocs, collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import {  db } from "../lib/firebase";
-import DataTable from 'react-data-table-component';
+import DataTable, { defaultThemes } from 'react-data-table-component';
 import { MdSettingsRemote } from 'react-icons/md';
 
 function Dashboard() {
@@ -92,68 +92,105 @@ function Dashboard() {
     {
       name: 'Name',
       selector: row => row.name,
+      sortable: "true",
+      // grow: 2,
     },
     {
       name: 'Location',
       selector: row => row.location,
+      sortable: "true",
+      right: "true",
+      // hide: 'md',
     },
     {
       name: 'Oxygen',
       selector: row => row.oxygen,
+      sortable: "true",
+      right: "true",
+      hide: 'md',
     },
     {
       name: 'Nitrogen',
       selector: row => row.nitrogen,
+      sortable: "true",
+      right: "true",
+      hide: 'md',
     },
     {
       name: 'Phosphorus',
       selector: row => row.phosphorus,
+      sortable: "true",
+      right: "true",
+      hide: 'md',
     },
     {
       name: 'Temperature',
       selector: row => row.temperature,
+      sortable: "true",
+      right: "true",
+      hide: 'sm',
     },
   ];
+
+  const ExpandedComponent = ({ data }) => `Location: ${data.location} \t Oxygen: ${data.oxygen} \n Nitrogen: ${data.nitrogen} \n Phosphorus: ${data.phosphorus} \n Temperature: ${data.temperature}`;
   
 
   return (
     <div>
         <Menu/>
         <div className="container mx-auto px-4 mt-10">
-          <div id='buttons' className='flex justify-between item-center'>
-            <h1 className='m-0 p-0 text-base font-bold'>Cages</h1>
-            <div>
+          <div id='buttons' className='flex flex-row-reverse'>
+            <button 
+                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto text-sm"
+                onClick={handleShowForm}
+                style={{cursor: 'pointer'}}>
+                    Add cage
+              </button>
               <button 
                 className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto mr-4 text-sm"
                 onClick={handleShowTable}
                 style={{cursor: 'pointer'}}>
                     View cages
               </button>
-              <button 
-                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto text-sm"
-                onClick={handleShowForm}
-                style={{cursor: 'pointer'}}>
-                    Add cage
-              </button>
-            </div>
           </div>
 
-          {showTable && ( <div id="table" className='mt-5'>
+          {showTable && ( <div id="table" className='mt-1'>
             <DataTable
+              title="Cages"
               columns={columns}
               data={tableData}
               customStyles={{
+                headRow: {
+                  style: {
+                    borderTopStyle: 'solid',
+                    borderTopWidth: '1px',
+                    borderTopColor: defaultThemes.default.divider.default,
+                  },
+                },
                 headCells: {
                   style: {
-                    fontSize: '15px', // Increase font size for header cells
+                    fontSize: '15px',
+                    '&:not(:last-of-type)': {
+                      borderRightStyle: 'solid',
+                      borderRightWidth: '1px',
+                      borderRightColor: defaultThemes.default.divider.default,
+                    },
                   },
                 },
                 cells: {
                   style: {
-                    fontSize: '14px', // Increase font size for body cells
+                    fontSize: '14px',
+                    '&:not(:last-of-type)': {
+                      borderRightStyle: 'solid',
+                      borderRightWidth: '1px',
+                      borderRightColor: defaultThemes.default.divider.default,
+                    },
                   },
                 },
               }}
+              pagination
+              expandableRows 
+              expandableRowsComponent={ExpandedComponent}
             />
           </div>)}
 
