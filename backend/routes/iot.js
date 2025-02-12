@@ -6,4 +6,5 @@ router.get("/", (req,res)=>{
     res.status(200).send("coming soon...")
 })
 
+
 export default router;
