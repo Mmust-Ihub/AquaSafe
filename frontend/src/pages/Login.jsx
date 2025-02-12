@@ -4,6 +4,7 @@ import { auth, db } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore"; // ✅ Correct Firestore imports
+import toast, { Toaster } from 'react-hot-toast';
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -23,6 +24,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); 
+    toast.loading("Signing up")
     try {
       await setPersistence(auth, browserLocalPersistence); // ✅ Correct local persistence
       
@@ -36,6 +38,9 @@ function Login() {
         alert("User not found in database.");
         auth.signOut();
       }
+
+      toast.dismiss()
+      toast.success("Login successful!");
     } catch (error) {
       setError("Login failed: " + error.message);
     }
@@ -80,6 +85,7 @@ function Login() {
           Don't have an account? <a href="/signUp" className="text-blue-500 hover:underline">Sign Up</a>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 }
