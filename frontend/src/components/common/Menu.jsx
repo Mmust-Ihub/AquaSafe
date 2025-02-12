@@ -18,7 +18,7 @@ export default function Menu() {
         </button>
 
         {/* Menu Items */}
-        <ul className={`absolute top-16 left-0 w-full bg-blue-600 md:static md:flex md:space-x-6 md:w-auto transition-all ${isOpen ? "block" : "hidden"} md:flex`}>
+        <ul className={`absolute pl-3 pb-3 md:pb-0 top-13 left-0 w-full bg-blue-600 md:static md:flex md:space-x-6 md:w-auto transition-all ${isOpen ? "block" : "hidden"} md:flex`}>
           {/* <li className="text-white p-4 hover:bg-blue-700"><a href="#">Home</a></li> */}
           {/* <li className="text-white p-4 hover:bg-blue-700"><a href="/dashboard">Dashboard</a></li> */}
           {/* <li className="text-white p-4 hover:bg-blue-700"><a href="#">Profile</a></li> */}
@@ -26,7 +26,6 @@ export default function Menu() {
             <button
               onClick={logout}
               className="text-white bg-red-500 px-5 py-1 rounded-md hover:bg-red-600 hover:cursor-pointer"
-              style={{ cursor: "pointer" }}
             >
               Logout
             </button>

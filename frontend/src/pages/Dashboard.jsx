@@ -128,13 +128,13 @@ function Dashboard() {
             <h1 className='m-0 p-0 text-base font-bold'>Cages</h1>
             <div>
               <button 
-                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 w-24 mr-4 text-sm"
+                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto mr-4 text-sm"
                 onClick={handleShowTable}
                 style={{cursor: 'pointer'}}>
                     View cages
               </button>
               <button 
-                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 w-24 text-sm"
+                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto text-sm"
                 onClick={handleShowForm}
                 style={{cursor: 'pointer'}}>
                     Add cage

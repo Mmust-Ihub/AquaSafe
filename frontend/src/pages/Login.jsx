@@ -27,7 +27,6 @@ function Login() {
       await setPersistence(auth, browserLocalPersistence); // ✅ Correct local persistence
       
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCred);
 
       // ✅ Correct Firestore query
       const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
