@@ -9,24 +9,26 @@ export default async function AddData(req, res){
     const cageRef = db.collection("cages").doc(id);
     const data =  await cageRef.update({nitrogen,oxygen,phosphorus,temp,location})
     console.log(data);
-    if(nitrogen > 0.1 || oxygen < 5 || temp > 37 || phosphorus > 0.1 ){
+    if (nitrogen > 0.1 || oxygen < 5 || (temp > 37 && temp > 23) || phosphorus > 0.1){
         try{
         const userRef = await db.collection("users").doc(req.user).get();
         console.log(userRef.data() ,"user...");
-        return res.status(202).json({
+        res.status(202).json({
             move: {
                 latitude:  -0.180472,
                 longitude: 34.747611
             }
         })
+        return sendEmail(userRef.data().email, req.body);
         } catch(err){
             console.log(err)
-            return res.status(500).json({error: "An error occured try again"})
+            res.status(500).json({error: "An error occured try again"})
         }
-        sendEmail(userRef.data().email, req.body);
+        
 
     }
   
-    return res.status(200).json({message: "Recieved successfully"});
+    res.status(200).json({message: "Recieved successfully"});
+    return;
     
 }
