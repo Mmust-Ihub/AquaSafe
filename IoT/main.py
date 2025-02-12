@@ -103,9 +103,7 @@ if not connect_wifi():
     machine.reset()
 
 while True:
-    #temp = read_temperature()
-    post_data()
-   
-
+    temp = read_temperature()
+    post_data(temp)
     time.sleep(2)
 
