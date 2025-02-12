@@ -18,8 +18,6 @@ function Dashboard() {
     e.preventDefault()
     let userUid = JSON.parse(localStorage.getItem("user")) 
 
-    console.log(userUid)
-
     let sendData = {
       name: cageName,
       ownerId: userUid.uid,
@@ -41,7 +39,8 @@ function Dashboard() {
       if(cage){
         toast.success("Cage added successfuly")
       }
-      handleShowForm()
+      setCageName("")
+      handleShowTable()
     }catch(err){
       console.error("Add cage error:", err);
       setError(err.message || "An unexpected error occurred. Please try again.");
