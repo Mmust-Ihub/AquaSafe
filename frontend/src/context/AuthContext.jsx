@@ -28,7 +28,10 @@ export function AuthProvider({ children }) {
             await signOut(auth);
             setUser(null);
             localStorage.removeItem("user");
-            navigate("/login");
+
+            // const currentUrl = window.location.href;
+            // currentUrl.includes("/signUp") ? navigate("/signUp") : navigate("/login");
+            navigate("/login")
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -36,7 +39,9 @@ export function AuthProvider({ children }) {
       } else {
         setUser(null);
         localStorage.removeItem("user");
-        navigate("/login");
+        const currentUrl = window.location.href;
+        currentUrl.includes("/signUp") ? navigate("/signUp") : navigate("/login");
+        // navigate("/login");
       }
       setLoading(false);
     });
