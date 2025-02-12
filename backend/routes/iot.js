@@ -10,6 +10,13 @@ router.get("/", (req,res)=>{
 })
 
 // Check Cage Validity
+<<<<<<< HEAD
 router.post("/data",ValidateData,ValidateCageId, AddData);
 
+=======
+router.post("/data", )
+// phosphorus=0.1 max
+// Oxygen = min 5
+// nitrogen = 0.1 max
+>>>>>>> ca267e8cf5be6300f7ab768eaf2f25ab1fe77bae
 export default router;
