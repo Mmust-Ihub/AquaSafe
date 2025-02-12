@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 import Menu from '../components/common/Menu';
-import {  getDocs, collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import {  db } from "../lib/firebase";
 import DataTable, { defaultThemes } from 'react-data-table-component';
-import { MdSettingsRemote } from 'react-icons/md';
 
 function Dashboard() {
   const [cageName, setCageName] = useState("")
@@ -14,10 +13,9 @@ function Dashboard() {
   const [showForm, setShowForm] = useState(false)
   const [showTable, setShowTable] = useState(true)
 
-  const handleSignup = async (e) => {
+  const handleAddCage = async (e) => {
     e.preventDefault()
     let userUid = JSON.parse(localStorage.getItem("user")) 
-
     let sendData = {
       name: cageName,
       ownerId: userUid.uid,
@@ -32,7 +30,6 @@ function Dashboard() {
     }
 
     toast.loading("Adding cage")
-
     try{
       const cage = await addDoc(collection(db, "cages"), sendData);
       toast.dismiss()
@@ -51,29 +48,31 @@ function Dashboard() {
 
   }
 
+  // Show/hide form
   const handleShowForm = () => {
     setShowTable(false)
     setShowForm(true)
   }
 
+  // Show/hide table
   const handleShowTable = () => {
     setShowForm(false)
     setShowTable(true)
   }
 
+  // Get cages data from snapshot
   useEffect(()=>{
     let userUid = JSON.parse(localStorage.getItem("user"))
     const q = query(collection(db, "cages"), where("ownerId", "==", userUid.uid))
-
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
       const cagesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      console.log(cagesData)
+      // console.log(cagesData)
       setCagesData(cagesData);
     })
-
     return ()=> unsubscribe()
   },[])
 
+  // Set table data from cages data
   useEffect(()=>{
     const data = cagesData.map(cage => {
       return {
@@ -88,6 +87,7 @@ function Dashboard() {
     setTableData(data)
   },[cagesData])
 
+  // Table columns
   const columns = [
     {
       name: 'Name',
@@ -132,7 +132,8 @@ function Dashboard() {
     },
   ];
 
-  const ExpandedComponent = ({ data }) => `Location: ${data.location} \t Oxygen: ${data.oxygen} \n Nitrogen: ${data.nitrogen} \n Phosphorus: ${data.phosphorus} \n Temperature: ${data.temperature}`;
+  // Define data to be shown when a row is expanded
+  const ExpandedComponent = ({ data }) => `Location: ${data.location} || Oxygen: ${data.oxygen} || Nitrogen: ${data.nitrogen} || Phosphorus: ${data.phosphorus} || Temperature: ${data.temperature}`;
   
 
   return (
@@ -195,7 +196,7 @@ function Dashboard() {
           </div>)}
 
           {showForm && 
-          (<form onSubmit={handleSignup} className="mt-5 p-0 m-0">
+          (<form onSubmit={handleAddCage} className="mt-5 p-0 m-0">
             <label htmlFor="cageName">Enter cage name</label>
             <div className='flex mt-2'>
               <input
