@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 import Menu from '../components/common/Menu';
-import {  getDocs, collection, addDoc, query, where } from "firebase/firestore";
+import {  getDocs, collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 import {  db } from "../lib/firebase";
 import DataTable from 'react-data-table-component';
+import { MdSettingsRemote } from 'react-icons/md';
 
 function Dashboard() {
   const [cageName, setCageName] = useState("")
@@ -61,21 +62,17 @@ function Dashboard() {
     setShowTable(true)
   }
 
-  const loadData = async ()=>{
-    try {
-      let userUid = JSON.parse(localStorage.getItem("user"))
-      const cages = await getDocs(query(collection(db, "cages"), where("ownerId", "==", userUid.uid)))
-      const cagesData = cages.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  useEffect(()=>{
+    let userUid = JSON.parse(localStorage.getItem("user"))
+    const q = query(collection(db, "cages"), where("ownerId", "==", userUid.uid))
+
+    const unsubscribe = onSnapshot(q,(querySnapshot) => {
+      const cagesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
       console.log(cagesData)
       setCagesData(cagesData);
-    } catch (err) {
-      console.error("Load data error:", err);
-      setError(err.message || "An unexpected error occurred. Please try again.");
-    }
-  }
+    })
 
-  useEffect(()=>{
-    loadData()
+    return ()=> unsubscribe()
   },[])
 
   useEffect(()=>{
