@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import cors from "cors";
-import UserRoutes from "./routes/users.js"
+import UserRoutes from "./routes/users.js";
+import IoTRoutes from "./routes/iot.js"
 
 const app = express();
 app.use(json());
@@ -11,6 +12,7 @@ app.get("/", (req, res)=>{
 });
 
 app.use("/users", UserRoutes);
+app.use("/iot", IoTRoutes);
 
 app.listen(port, () => {
     console.log(`app listening on  http://localhost:${port}`)
