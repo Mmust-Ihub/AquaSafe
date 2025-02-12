@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import toast, { Toaster } from 'react-hot-toast';
 import { auth, db } from "../lib/firebase"; // Import Firebase auth
 import { useNavigate } from "react-router-dom";
 import {  setDoc, doc } from "firebase/firestore";
@@ -28,26 +29,37 @@ function Signup() {
       setError("Passwords do not match!");
       return;
     }
-  
+
+    toast.loading("Signing up")
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      const user = userCredential._tokenResponse.idToken
-      localStorage.setItem(user_id, user)
-      await setDoc(doc(db, "users", user.uid), {
+      const user = userCredential.user
+      localStorage.setItem("user_id", user)
+
+      const farmer = await setDoc(doc(db, "users", user.uid), {
         email: email,
         phone: cleanedPhone,
         role: "farmer"
       });
-  
-      alert("Account created successfully!");
-      navigate("/dashboard"); 
+
+      toast.dismiss()
+      if(user){
+        toast.success('Account created successfully!')
+      }
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000)
+
     } catch (err) {
       console.error("Signup error:", err);
       setError(err.message || "An unexpected error occurred. Please try again.");
+    }finally{
+      return
     }
-  };
-  
+
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
@@ -98,8 +110,13 @@ function Signup() {
           >
             Sign Up
           </button>
+
+          <p className="mt-4 text-sm text-gray-600 text-center">
+            Already have an account? <a href="/login" className="text-blue-500 hover:underline">Login</a>
+          </p>
         </form>
       </div>
+      <Toaster />
     </div>
   );
 }
