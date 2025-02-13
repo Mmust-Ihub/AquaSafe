@@ -52,6 +52,8 @@ function Signup() {
       }, 2000)
 
     } catch (err) {
+      toast.dismiss()
+      toast.error("An error occurred. Please Try again")
       console.error("Signup error:", err);
       setError(err.message || "An unexpected error occurred. Please try again.");
     }finally{

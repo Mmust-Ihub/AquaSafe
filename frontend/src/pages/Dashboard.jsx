@@ -169,8 +169,8 @@ function Dashboard() {
         toast.dismiss();
         toast.success("Selected cages deleted successfully");
         setSelectedRows([]);
-        setToggleCleared(!toggleCleared);
-        window.location.reload();
+        setToggleCleared(!toggleCleared)
+        // window.location.reload();
       } catch (err) {
         console.error("Delete cages error:", err);
         toast.dismiss();
@@ -249,6 +249,7 @@ function Dashboard() {
               selectableRows
               onSelectedRowsChange={handleRowsSelected}
               contextActions={contextActions}
+              clearSelectedRows={toggleCleared}
             />
           </div>)}
 
