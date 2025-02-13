@@ -24,7 +24,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); 
-    toast.loading("Signing up")
+    toast.loading("Login in")
     try {
       await setPersistence(auth, browserLocalPersistence); // ✅ Correct local persistence
       
