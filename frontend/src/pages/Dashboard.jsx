@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 import Menu from '../components/common/Menu';
-import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import {  db } from "../lib/firebase";
 import DataTable, { defaultThemes } from 'react-data-table-component';
 
@@ -12,6 +12,8 @@ function Dashboard() {
   const [tableData, setTableData] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [showTable, setShowTable] = useState(true)
+  const [showDelete, setShowDelete] = useState(false)
+  const [selectedRows, setSelectedRows] = useState([])
 
   const handleAddCage = async (e) => {
     e.preventDefault()
@@ -66,7 +68,7 @@ function Dashboard() {
     const q = query(collection(db, "cages"), where("ownerId", "==", userUid.uid))
     const unsubscribe = onSnapshot(q,(querySnapshot) => {
       const cagesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      // console.log(cagesData)
+      console.log(cagesData)
       setCagesData(cagesData);
     })
     return ()=> unsubscribe()
@@ -81,7 +83,8 @@ function Dashboard() {
         oxygen: cage.oxygen,
         nitrogen: cage.nitrogen,
         phosphorus: cage.phosphorus,
-        temperature: cage.temp
+        temperature: cage.temp,
+        id: cage.id,
       }
     })
     setTableData(data)
@@ -130,10 +133,48 @@ function Dashboard() {
       right: "true",
       hide: 'sm',
     },
+    {
+      name: 'Id',
+      selector: row => row.id,
+      sortable: "true",
+      right: "true",
+      omit: "true"
+    },
   ];
 
   // Define data to be shown when a row is expanded
   const ExpandedComponent = ({ data }) => `Location: ${data.location} || Oxygen: ${data.oxygen} || Nitrogen: ${data.nitrogen} || Phosphorus: ${data.phosphorus} || Temperature: ${data.temperature}`;
+
+  // Delet selected rows
+  const handleRowsSelected = async ({ selectedRows }) => {
+      setShowDelete(true)
+      setSelectedRows(selectedRows)
+  }
+
+  const handleDeleteSelected = async () => {
+    if (selectedRows.length === 0) {
+      toast.error("No rows selected");
+      return;
+    }
+
+    const confirmDelete = window.confirm("Are you sure you want to delete the selected cages?");
+    if (!confirmDelete) return;
+
+    toast.loading("Deleting selected cages");
+    try {
+      selectedRows.forEach(async (row) => {
+        await deleteDoc(doc(db, "cages", row.id));
+      })
+      toast.dismiss();
+      toast.success("Selected cages deleted successfully");
+      setSelectedRows([]);
+      setShowDelete(false);
+    } catch (err) {
+      console.error("Delete cages error:", err);
+      toast.dismiss();
+      toast.error("An error occurred while deleting cages. Please try again.");
+    }
+  }
   
 
   return (
@@ -141,8 +182,15 @@ function Dashboard() {
         <Menu/>
         <div className="container mx-auto px-4 mt-10">
           <div id='buttons' className='flex flex-row-reverse'>
-            <button 
-                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto text-sm"
+              {showDelete && (<button
+                className="p-2 text-white bg-red-500 rounded hover:bg-red-600 md:w-auto text-sm"
+                onClick={handleDeleteSelected}
+                style={{ cursor: 'pointer' }}
+              >
+                Delete selected
+              </button>)}
+              <button 
+                className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto mr-4 text-sm"
                 onClick={handleShowForm}
                 style={{cursor: 'pointer'}}>
                     Add cage
@@ -192,6 +240,8 @@ function Dashboard() {
               pagination
               expandableRows 
               expandableRowsComponent={ExpandedComponent}
+              selectableRows
+              onSelectedRowsChange={handleRowsSelected}
             />
           </div>)}
 
