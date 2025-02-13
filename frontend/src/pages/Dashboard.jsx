@@ -12,8 +12,9 @@ function Dashboard() {
   const [tableData, setTableData] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [showTable, setShowTable] = useState(true)
-  const [showDelete, setShowDelete] = useState(false)
+
   const [selectedRows, setSelectedRows] = useState([])
+  const [toggleCleared, setToggleCleared] = useState(false)
 
   const handleAddCage = async (e) => {
     e.preventDefault()
@@ -147,34 +148,46 @@ function Dashboard() {
 
   // Delet selected rows
   const handleRowsSelected = async ({ selectedRows }) => {
-      setShowDelete(true)
       setSelectedRows(selectedRows)
   }
 
-  const handleDeleteSelected = async () => {
-    if (selectedRows.length === 0) {
-      toast.error("No rows selected");
-      return;
+  const contextActions = React.useMemo(() => {
+		const handleDeleteSelected = async () => {
+      if (selectedRows.length === 0) {
+        toast.error("No rows selected");
+        return;
+      }
+
+      const confirmDelete = window.confirm("Are you sure you want to delete the selected cages?");
+      if (!confirmDelete) return;
+
+      toast.loading("Deleting selected cages");
+      try {
+        selectedRows.forEach(async (row) => {
+          await deleteDoc(doc(db, "cages", row.id));
+        })
+        toast.dismiss();
+        toast.success("Selected cages deleted successfully");
+        setSelectedRows([]);
+        setToggleCleared(!toggleCleared);
+        window.location.reload();
+      } catch (err) {
+        console.error("Delete cages error:", err);
+        toast.dismiss();
+        toast.error("An error occurred while deleting cages. Please try again.");
+      }
     }
 
-    const confirmDelete = window.confirm("Are you sure you want to delete the selected cages?");
-    if (!confirmDelete) return;
-
-    toast.loading("Deleting selected cages");
-    try {
-      selectedRows.forEach(async (row) => {
-        await deleteDoc(doc(db, "cages", row.id));
-      })
-      toast.dismiss();
-      toast.success("Selected cages deleted successfully");
-      setSelectedRows([]);
-      setShowDelete(false);
-    } catch (err) {
-      console.error("Delete cages error:", err);
-      toast.dismiss();
-      toast.error("An error occurred while deleting cages. Please try again.");
-    }
-  }
+		return (
+			<button
+        className="p-2 text-white bg-red-500 rounded hover:bg-red-600 md:w-auto text-sm"
+        onClick={handleDeleteSelected}
+        style={{ cursor: 'pointer' }}
+      >
+        Delete selected
+      </button>
+		);
+	}, [selectedRows, toggleCleared]);
   
 
   return (
@@ -182,13 +195,6 @@ function Dashboard() {
         <Menu/>
         <div className="container mx-auto px-4 mt-10">
           <div id='buttons' className='flex flex-row-reverse'>
-              {showDelete && (<button
-                className="p-2 text-white bg-red-500 rounded hover:bg-red-600 md:w-auto text-sm"
-                onClick={handleDeleteSelected}
-                style={{ cursor: 'pointer' }}
-              >
-                Delete selected
-              </button>)}
               <button 
                 className="p-2 text-white bg-blue-500 rounded hover:bg-blue-600 md:w-auto mr-4 text-sm"
                 onClick={handleShowForm}
@@ -242,6 +248,7 @@ function Dashboard() {
               expandableRowsComponent={ExpandedComponent}
               selectableRows
               onSelectedRowsChange={handleRowsSelected}
+              contextActions={contextActions}
             />
           </div>)}
 
