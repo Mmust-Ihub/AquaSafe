@@ -42,7 +42,9 @@ function Login() {
       toast.dismiss()
       toast.success("Login successful!");
     } catch (error) {
+      toast.dismiss()
       setError("Login failed: " + error.message);
+      toast.error("An error occurred. Please Try again")
     }
   };
 
